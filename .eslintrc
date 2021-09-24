@@ -11,7 +11,7 @@
     "consistent-return": "off",
     "no-shadow": "off",
     "import/no-extraneous-dependencies": ["error", {"devDependencies": ["e2e/**/*.js", "**/*.spec.js"]}],
-    "no-console": ["warn", {
+    "no-console": ["error", {
       "allow": ["info", "warn", "error"]
     }]
   }
