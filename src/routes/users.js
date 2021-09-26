@@ -34,6 +34,7 @@ const initAdminUser = (app, next) => {
     .catch((error) => {
       next(error);
     });
+  next();
 };
 
 /*

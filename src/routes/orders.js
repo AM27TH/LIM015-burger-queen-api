@@ -39,7 +39,7 @@ module.exports = (app, nextMain) => {
    * @code {401} si no hay cabecera de autenticación
    */
   app.get('/orders', requireAuth, getOrders);
-  // app.get('/orders', requireAuth, getOrders);
+
   /**
    * @name GET /orders/:orderId
    * @description Obtiene los datos de una orden especifico
