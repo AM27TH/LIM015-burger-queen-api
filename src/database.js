@@ -8,10 +8,6 @@ mongoose
   })
   .catch((error) => console.error(error));
 
-mongoose.connection.once('open', () => {
-  console.info('Db conectada', config.dbUrl);
-});
+mongoose.connection.once('open', () => console.info('Db conectada', config.dbUrl));
 
-mongoose.connection.on('error', (error) => {
-  console.error(error);
-});
+mongoose.connection.on('error', (error) => console.error(error));

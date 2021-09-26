@@ -8,6 +8,11 @@ const passwordValidation = (password) => {
   return passwordRegex.test(password);
 };
 
+const idValidation = (id) => {
+  const checkForValidMongoDbID = new RegExp(/^[0-9a-fA-F]{24}$/);
+  return checkForValidMongoDbID.test(id);
+};
+
 module.exports = {
-  emailValidation, passwordValidation,
+  emailValidation, passwordValidation, idValidation,
 };
