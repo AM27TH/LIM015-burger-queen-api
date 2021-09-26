@@ -7,6 +7,6 @@ const productSchema = new Schema({
   type: { type: String, required: true },
   dateEntry: { type: Date, default: Date.now },
 },
-{ versionKey: false, timestamps: true });
+{ versionKey: false });
 
 module.exports = model('Product', productSchema);

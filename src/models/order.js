@@ -9,7 +9,7 @@ const orderSchema = new Schema({
   }],
   status: { type: String, required: true, default: 'pending' },
   dateEntry: { type: Date, default: Date.now },
-  dateProcessed: { type: Date, required: true },
+  dateProcessed: { type: Date, required: true, default: Date.now },
 });
 
 module.exports = model('Order', orderSchema);

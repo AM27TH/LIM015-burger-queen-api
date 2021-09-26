@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const { Schema, model } = require('mongoose');
 
 const bcrypt = require('bcrypt');
@@ -27,5 +28,13 @@ userSchema.statics.matchPassword = async (password, receivedPassword) => {
   const comparedPassword = await bcrypt.compare(password, receivedPassword);
   return comparedPassword;
 };
+
+userSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    delete returnedObject.password;
+    delete returnedObject.createdAt;
+    delete returnedObject.updatedAt;
+  },
+});
 
 module.exports = model('User', userSchema);
