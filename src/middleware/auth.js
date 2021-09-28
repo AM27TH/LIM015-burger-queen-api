@@ -34,10 +34,8 @@ module.exports.isAuthenticated = (req) => {
 };
 
 module.exports.isAdmin = async (req) => {
-  // TODO: decidir por la informacion del request si la usuaria es admin
   const user = await User.findById(req.authToken.id);
-  if (user.roles.admin) return true;
-  return false;
+  return user.roles.admin;
 };
 
 module.exports.requireAuth = (req, resp, next) => (
@@ -46,11 +44,8 @@ module.exports.requireAuth = (req, resp, next) => (
     : next()
 );
 
-module.exports.requireAdmin = (req, resp, next) => (
-  // eslint-disable-next-line no-nested-ternary
-  (!module.exports.isAuthenticated(req))
-    ? next(401)
-    : (!module.exports.isAdmin(req))
-      ? next(403)
-      : next()
-);
+module.exports.requireAdmin = async (req, resp, next) => {
+  if (!module.exports.isAuthenticated(req)) return next(401);
+  if (!await module.exports.isAdmin(req)) return next(403);
+  return next();
+};
