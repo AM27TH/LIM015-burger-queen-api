@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const { Schema, model } = require('mongoose');
-
+const mongoosePaginate = require('mongoose-paginate-v2');
 const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
@@ -36,5 +36,7 @@ userSchema.set('toJSON', {
     delete returnedObject.updatedAt;
   },
 });
+
+userSchema.plugin(mongoosePaginate);
 
 module.exports = model('User', userSchema);
