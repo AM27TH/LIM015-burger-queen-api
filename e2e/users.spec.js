@@ -154,7 +154,7 @@ describe('POST /users', () => {
       method: 'POST',
       body: {
         email: 'test1@test.test',
-        password: '12345',
+        password: 'As.12345',
         roles: { admin: false },
       },
     })
@@ -176,7 +176,7 @@ describe('POST /users', () => {
       method: 'POST',
       body: {
         email: 'admin1@test.test',
-        password: '12345',
+        password: 'As.12345',
         roles: { admin: true },
       },
     })
@@ -196,7 +196,7 @@ describe('POST /users', () => {
   it('should fail with 403 when user is already registered', () => (
     fetchAsAdmin('/users', {
       method: 'POST',
-      body: { email: 'test@test.test', password: '123456' },
+      body: { email: 'test@test.test', password: 'As.123456' },
     })
       .then((resp) => expect(resp.status).toBe(403))
   ));
@@ -234,12 +234,12 @@ describe('PUT /users/:uid', () => {
   it('should update user when own data (password change)', () => (
     fetchAsTestUser('/users/test@test.test', {
       method: 'PUT',
-      body: { password: 'garmadon' },
+      body: { password: 'A1.garmadon' },
     })
       .then((resp) => expect(resp.status).toBe(200))
       .then(() => fetch('/auth', {
         method: 'POST',
-        body: { email: 'test@test.test', password: 'garmadon' },
+        body: { email: 'test@test.test', password: 'A1.garmadon' },
       }))
       .then((resp) => {
         expect(resp.status).toBe(200);
@@ -251,12 +251,12 @@ describe('PUT /users/:uid', () => {
   it('should update user when admin', () => (
     fetchAsAdmin('/users/test@test.test', {
       method: 'PUT',
-      body: { password: 'ohmygod' },
+      body: { password: 'A1.ohmygod' },
     })
       .then((resp) => expect(resp.status).toBe(200))
       .then(() => fetch('/auth', {
         method: 'POST',
-        body: { email: 'test@test.test', password: 'ohmygod' },
+        body: { email: 'test@test.test', password: 'A1.ohmygod' },
       }))
       .then((resp) => {
         expect(resp.status).toBe(200);
@@ -283,7 +283,7 @@ describe('DELETE /users/:uid', () => {
   ));
 
   it('should delete own user', () => {
-    const credentials = { email: `foo-${Date.now()}@bar.baz`, password: '1234' };
+    const credentials = { email: `foo-${Date.now()}@bar.baz`, password: 'As.123456' };
     return fetchAsAdmin('/users', { method: 'POST', body: credentials })
       .then((resp) => expect(resp.status).toBe(200))
       .then(() => fetch('/auth', { method: 'POST', body: credentials }))
@@ -300,7 +300,7 @@ describe('DELETE /users/:uid', () => {
   });
 
   it('should delete other user as admin', () => {
-    const credentials = { email: `foo-${Date.now()}@bar.baz`, password: '1234' };
+    const credentials = { email: `foo-${Date.now()}@bar.baz`, password: 'As.123456' };
     return fetchAsAdmin('/users', { method: 'POST', body: credentials })
       .then((resp) => expect(resp.status).toBe(200))
       .then(() => fetchAsAdmin(`/users/${credentials.email}`, { method: 'DELETE' }))

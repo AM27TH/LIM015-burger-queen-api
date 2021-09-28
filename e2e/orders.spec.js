@@ -99,7 +99,7 @@ describe('GET /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As User', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -145,7 +145,7 @@ describe('GET /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As Admin', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -203,7 +203,7 @@ describe('GET /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 99 },
+        body: { name: 'Test Order As User 2', price: 99 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -227,7 +227,7 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test Order As User 2');
         expect(json.products[0].product.price).toBe(99);
       })
   ));
@@ -236,7 +236,7 @@ describe('GET /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As Admin 2', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -260,7 +260,7 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test Order As Admin 2');
         expect(json.products[0].product.price).toBe(10);
       })
   ));
@@ -284,7 +284,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order 400 bad props', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -311,7 +311,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order 400 bad status', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -339,7 +339,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order preparing', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -374,7 +374,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order delivering', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -409,7 +409,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order delivered', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -459,7 +459,7 @@ describe('DELETE /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 25 },
+        body: { name: 'Test Order Delete', price: 25 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
