@@ -2,12 +2,17 @@ const User = require('../models/user');
 const {
   emailValidation, passwordValidation, idValidation,
 } = require('../services/validation');
+const { paginate } = require('../services/pagination');
 
 module.exports = {
   getUsers: async (req, resp, next) => {
     try {
-      const users = await User.find();
-      return resp.json(users);
+      const url = `${req.protocol}://${req.headers.host + req.path}`;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const page = parseInt(req.query.page, 10) || 1;
+      const users = await User.paginate({}, { limit, page });
+      resp.links(paginate(url, users.limit, users.page, users.totalPages, users));
+      return resp.json(users.docs);
     } catch (error) {
       next(error);
     }
@@ -16,7 +21,12 @@ module.exports = {
     try {
       // obtener token de verificación para validar si es admin
       const userToken = await User.findById(req.authToken.id);
-      const user = await User.findById(req.params.uid);
+      // Datos de usuario a modificar
+      const { uid } = req.params;
+      let user = null;
+      // Validar si recibimos uid o email
+      if (idValidation(uid)) { user = await User.findById(uid); }
+      if (emailValidation(uid)) { user = await User.findOne({ email: uid }); }
       if (!user) return next(404);
       // Si no es admin o el mismo usuario
       if (!userToken.roles.admin && !(userToken.email === user.email)) return next(403);
@@ -31,10 +41,11 @@ module.exports = {
       // Validación de email y contraseña
       if (!email || !password) return next(400);
       if (!emailValidation(email)) return resp.status(400).json({ message: 'Por favor, ingrese un email válido' });
-      if (!passwordValidation(password)) return resp.status(400).json({ message: 'Por favor, ingrese una contraseña válida' });
       // Validamos si el correo ya esta registrado
       const searchUser = await User.findOne({ email });
       if (searchUser) return resp.status(403).json({ message: 'El email ya está registrado' });
+      // Validar contraseña
+      if (!passwordValidation(password)) return resp.status(400).json({ message: 'Por favor, ingrese una contraseña válida' });
       // Creamos usuario
       const newUser = new User({
         email,
@@ -59,11 +70,11 @@ module.exports = {
       if (idValidation(uid)) { user = await User.findById(uid); }
       if (emailValidation(uid)) { user = await User.findOne({ email: uid }); }
       if (!user) return next(404);
+      // Si no es admin o el mismo usuario
+      if (!userToken.roles.admin && !(userToken.email === user.email)) return next(403);
       // Validar cuerpo de request
       if (!Object.keys(req.body).length) return next(400);
       let { email, password, roles } = req.body;
-      // Si no es admin o el mismo usuario
-      if (!userToken.roles.admin && !(userToken.email === user.email)) return next(403);
       if (!email) email = user.email;
       if (!password) password = user.password;
       if (!roles) roles = user.roles;

@@ -1,17 +1,24 @@
 const Order = require('../models/order');
+const { idValidation } = require('../services/validation');
+const { paginate } = require('../services/pagination');
 
 module.exports = {
   getOrders: async (req, resp, next) => {
     try {
-      const orders = await Order.find();
-      return resp.json(orders);
+      const url = `${req.protocol}://${req.headers.host + req.path}`;
+      const limit = parseInt(req.query.limit, 10) || 10;
+      const page = parseInt(req.query.page, 10) || 1;
+      const orders = await Order.paginate({}, { limit, page, populate: 'products.product' });
+      resp.links(paginate(url, orders.limit, orders.page, orders.totalPages, orders));
+      return resp.json(orders.docs);
     } catch (error) {
       next(error);
     }
   },
   getOrderById: async (req, resp, next) => {
     try {
-      const order = await Order.findOne({ _id: req.params.orderId });
+      if (!idValidation(req.params.orderId)) return next(404);
+      const order = await Order.findOne({ _id: req.params.orderId }).populate('products.product');
       if (!order) return next(404);
       return resp.json(order);
     } catch (error) {
@@ -21,34 +28,54 @@ module.exports = {
   addOrder: async (req, resp, next) => {
     try {
       const { userId, client, products } = req.body;
-      if (!userId || !client || products.length === 0) return next(400);
+      if (!userId || products.length === 0) return next(400);
       const newOrder = new Order({
-        userId, client, products,
+        userId,
+        client,
+        products: products.map((product) => ({
+          qty: product.qty,
+          product: product.productId,
+        })),
       });
-      // TODO: Guardar newOrder
-      resp.json(newOrder);
+      await newOrder.save();
+      const currentOrder = await newOrder.populate('products.product');
+      resp.json(currentOrder);
     } catch (error) {
       next(error);
     }
   },
   updateOrderById: async (req, resp, next) => {
     try {
+      if (!idValidation(req.params.orderId)) return next(404);
       // Validar si existe el producto
       const order = await Order.findOne({ _id: req.params.orderId });
       if (!order) return next(404);
       if (!Object.keys(req.body).length) return next(400);
-      const { status } = req.body;
-      if (status !== 'pendin' || status !== 'canceled' || status !== 'delivering' || status !== 'delivered') return next(400);
-      const updatedOrder = await Order.findByIdAndUpdate(req.params.orderId, req.body, {
-        new: true,
-      });
-      return resp.json(updatedOrder);
+      const {
+        userId, client, products, status,
+      } = req.body;
+      // Validación de status
+      const validStatus = ['pending', 'canceled', 'delivering', 'delivered', 'preparing'];
+      if (!validStatus.includes(status)) return resp.status(400).json({ message: 'Estado inválido' });
+      if (status === 'delivered') order.dateProcessed = Date.now();
+      // Validación de otros campos
+      if (userId) order.userId = userId;
+      if (client) order.client = client;
+      if (status) order.status = status;
+      if (products) {
+        order.products = products.map((product) => ({
+          qty: product.qty, product: product.productId,
+        }));
+      }
+      await order.save();
+      return resp.json(order);
     } catch (error) {
       return next(error);
     }
   },
   deleteOrderById: async (req, resp, next) => {
     try {
+      if (!idValidation(req.params.orderId)) return next(404);
       const order = await Order.findOneAndDelete({ _id: req.params.orderId });
       if (!order) return next(404);
       return resp.json(order);
