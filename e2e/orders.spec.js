@@ -61,7 +61,7 @@ describe('POST /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 25 },
+        body: { name: 'Test create order as admin', price: 25 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -83,7 +83,7 @@ describe('POST /orders', () => {
         expect(typeof json.dateEntry).toBe('string');
         expect(Array.isArray(json.products)).toBe(true);
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test create order as admin');
         expect(json.products[0].product.price).toBe(25);
       })
   ));
