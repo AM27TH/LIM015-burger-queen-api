@@ -1,6 +1,8 @@
 {
   "name": "burger-queen-api",
   "version": "1.0.0",
+  "description": "API Burguer Queen",
+  "author": "Anghel Melanie Trillo Hernández",
   "main": "index.js",
   "license": "MIT",
   "engines": {
@@ -40,5 +42,14 @@
     "jsdoc": "^3.6.6",
     "jsdoc-http-plugin": "^0.3.2",
     "nodemon": "^2.0.13"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AM27TH/LIM015-burger-queen-api.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/AM27TH/LIM015-burger-queen-api/issues"
+  },
+  "homepage": "https://github.com/AM27TH/LIM015-burger-queen-api#readme"
 }
