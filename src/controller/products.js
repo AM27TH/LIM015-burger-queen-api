@@ -33,12 +33,11 @@ module.exports = {
       // Validar si existe el producto
       const product = await Product.findOne({ name });
       if (product) return resp.status(404).json({ message: 'Producto ya existe' });
-      if (Object.entries(req.body).length === 0) return next(400);
       // Validar campos name y price
       if (!name || !price) return next(400);
-      const newProduct = new Product({ name, price });
-      if (type) newProduct.type = type;
-      if (image) newProduct.image = image;
+      const newProduct = new Product({
+        name, price, type, image,
+      });
       const productSaved = await newProduct.save();
       return resp.json(productSaved);
     } catch (error) {
@@ -54,7 +53,7 @@ module.exports = {
       if (!Object.keys(req.body).length) return next(400);
       const { name, price } = req.body;
       // Validar si nombre nuevo ya existe
-      if (name) {
+      if (name && name !== product.name) {
         const productName = await Product.findOne({ name });
         if (productName) return resp.status(400).json({ message: 'Ese nombre de producto ya existe' });
       }

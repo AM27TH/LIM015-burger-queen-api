@@ -14,7 +14,7 @@ const {
   deleteUserById,
 } = require('../controller/users');
 
-const initAdminUser = (app, next) => {
+const initAdminUser = async (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
   if (!adminEmail || !adminPassword) {
     return next();
@@ -28,8 +28,8 @@ const initAdminUser = (app, next) => {
   // Validar si ya existe
   const searchUser = User.findOne({ email: adminEmail });
   searchUser
-    .then((user) => {
-      if (!user) return adminUser.save();
+    .then(async (user) => {
+      if (!user) await adminUser.save();
     })
     .catch((error) => {
       next(error);

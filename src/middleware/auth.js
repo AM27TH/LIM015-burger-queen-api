@@ -16,7 +16,6 @@ module.exports = () => (req, resp, next) => {
     if (err) {
       return next(403);
     }
-    // TODO: Verificar identidad del usuario usando `decodeToken.uid`
     const user = User.findById(decodedToken.id);
     user
       .then((verifiedUser) => {
