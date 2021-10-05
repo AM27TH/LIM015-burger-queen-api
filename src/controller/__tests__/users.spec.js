@@ -3,17 +3,16 @@ const { connect, close } = require('../../database');
 const app = require('../../app');
 const config = require('../../config');
 
-const adminUser = {
-  email: config.adminEmail,
-  password: config.adminPassword,
-};
-
 beforeAll(() => connect('mongodb://localhost:27017/test'));
 
 afterAll(async () => {
   await close();
 });
 
+const adminUser = {
+  email: config.adminEmail,
+  password: config.adminPassword,
+};
 let adminToken = null;
 
 const testUser = {

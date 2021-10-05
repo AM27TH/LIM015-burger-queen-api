@@ -6,7 +6,7 @@ const { connect } = require('./database');
 const { port } = config;
 
 async function main() {
-  connect();
+  await connect();
   await app.listen(port);
   console.info(`App listening on port ${port}`);
 }

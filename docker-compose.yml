@@ -23,7 +23,7 @@ services:
       PORT: 8080
       DB_URL: mongodb://bq:secret@db:27017/bq?authSource=admin
       JWT_SECRET: XXXXXXXXX
-      ADMIN_EMAIL: admin@localhost
+      ADMIN_EMAIL: admin@localhost.com
       ADMIN_PASSWORD: changeme
     volumes:
       - ./:/home/node/app
