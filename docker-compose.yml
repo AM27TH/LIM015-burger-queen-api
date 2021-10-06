@@ -22,9 +22,9 @@ services:
       NODE_ENV: production
       PORT: 8080
       DB_URL: mongodb://bq:secret@db:27017/bq?authSource=admin
-      JWT_SECRET: XXXXXXXXX
-      ADMIN_EMAIL: admin@localhost.com
-      ADMIN_PASSWORD: changeme
+      JWT_SECRET: "${JWT_SECRET}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
     volumes:
       - ./:/home/node/app
     expose:
