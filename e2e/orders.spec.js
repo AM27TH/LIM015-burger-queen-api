@@ -4,7 +4,6 @@ const {
   fetchAsAdmin,
 } = process;
 
-
 describe('POST /orders', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders', { method: 'POST' })
@@ -41,7 +40,7 @@ describe('POST /orders', () => {
       })
       .then(([product, user]) => fetchAsTestUser('/orders', {
         method: 'POST',
-        body: { products: [{ productId: product._id, qty: 5, client: 'client' }], userId: user._id },
+        body: { products: [{ productId: product._id, qty: 5 }], client: 'client', userId: user._id },
       }))
       .then((resp) => {
         expect(resp.status).toBe(200);
@@ -62,7 +61,7 @@ describe('POST /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 25 },
+        body: { name: 'Test create order as admin', price: 25 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -84,12 +83,11 @@ describe('POST /orders', () => {
         expect(typeof json.dateEntry).toBe('string');
         expect(Array.isArray(json.products)).toBe(true);
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test create order as admin');
         expect(json.products[0].product.price).toBe(25);
       })
   ));
 });
-
 
 describe('GET /orders', () => {
   it('should fail with 401 when no auth', () => (
@@ -101,7 +99,7 @@ describe('GET /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As User', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -147,7 +145,7 @@ describe('GET /orders', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As Admin', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -190,7 +188,6 @@ describe('GET /orders', () => {
   ));
 });
 
-
 describe('GET /orders/:orderId', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx')
@@ -206,7 +203,7 @@ describe('GET /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 99 },
+        body: { name: 'Test Order As User 2', price: 99 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -230,7 +227,7 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test Order As User 2');
         expect(json.products[0].product.price).toBe(99);
       })
   ));
@@ -239,7 +236,7 @@ describe('GET /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 10 },
+        body: { name: 'Test Order As Admin 2', price: 10 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -263,12 +260,11 @@ describe('GET /orders/:orderId', () => {
       })
       .then((json) => {
         expect(json.products.length).toBe(1);
-        expect(json.products[0].product.name).toBe('Test');
+        expect(json.products[0].product.name).toBe('Test Order As Admin 2');
         expect(json.products[0].product.price).toBe(10);
       })
   ));
 });
-
 
 describe('PUT /orders/:orderId', () => {
   it('should fail with 401 when no auth', () => (
@@ -288,7 +284,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order 400 bad props', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -315,7 +311,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order 400 bad status', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -343,7 +339,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order preparing', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -378,7 +374,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order delivering', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -413,7 +409,7 @@ describe('PUT /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 66 },
+        body: { name: 'Test Order delivered', price: 66 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
@@ -448,7 +444,6 @@ describe('PUT /orders/:orderId', () => {
   ));
 });
 
-
 describe('DELETE /orders/:orderId', () => {
   it('should fail with 401 when no auth', () => (
     fetch('/orders/xxx', { method: 'DELETE' })
@@ -464,7 +459,7 @@ describe('DELETE /orders/:orderId', () => {
     Promise.all([
       fetchAsAdmin('/products', {
         method: 'POST',
-        body: { name: 'Test', price: 25 },
+        body: { name: 'Test Order Delete', price: 25 },
       }),
       fetchAsTestUser('/users/test@test.test'),
     ])
