@@ -277,7 +277,7 @@ describe('PUT /users/:uid', () => {
     request(app)
       .put(`/users/${testUser.email}`)
       .set('Authorization', `Bearer ${adminToken}`)
-      .send({ email: 'admin@localhost.com' })
+      .send({ email: adminUser.email })
       .expect('Content-Type', /application\/json/)
       .expect(403, done);
   });
