@@ -1,26 +1,41 @@
 const request = require('supertest');
+const bcrypt = require('bcrypt');
+const User = require('../../models/user');
 const { connect, close } = require('../../database');
 const app = require('../../app');
-const config = require('../../config');
-
-beforeAll(() => connect('mongodb://localhost:27017/test'));
-
-afterAll(async () => {
-  await close();
-});
 
 const adminUser = {
-  email: config.adminEmail,
-  password: config.adminPassword,
+  email: 'adminUser@test.com',
+  password: 'Users@test123',
 };
 let adminToken = null;
 
 const testUser = {
   email: 'user@test.com',
-  password: 'User@123456',
+  password: 'User@test123',
 };
 let testToken = null;
 let idUser = null;
+
+beforeAll(async () => {
+  await connect('mongodb://localhost:27017/BQusers');
+  // Agregar admin
+  const addUser = (user, admin = false) => User.findOne({ email: user.email })
+    .then(async (doc) => {
+      // Crear usuario
+      const auth = new User({
+        email: user.email,
+        password: bcrypt.hashSync(user.password, 10),
+        roles: { admin },
+      });
+      if (!doc) await auth.save();
+    });
+  await addUser(adminUser, true);
+});
+
+afterAll(async () => {
+  await close();
+});
 
 describe('GET /users', () => {
   it('should return 401 when not auth', (done) => {

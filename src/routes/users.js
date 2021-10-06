@@ -16,9 +16,7 @@ const {
 
 const initAdminUser = async (app, next) => {
   const { adminEmail, adminPassword } = app.get('config');
-  if (!adminEmail || !adminPassword) {
-    return next();
-  }
+  if (!adminEmail || !adminPassword) return next();
   // Crear usuario
   const adminUser = new User({
     email: adminEmail,

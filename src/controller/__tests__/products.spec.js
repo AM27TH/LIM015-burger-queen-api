@@ -16,7 +16,7 @@ const testUser = {
 let testToken = null;
 
 beforeAll(async () => {
-  await connect('mongodb://localhost:27017/test');
+  await connect('mongodb://localhost:27017/BQproducts');
   // Agregar admin
   const addUser = (user, admin = false) => User.findOne({ email: user.email })
     .then(async (doc) => {

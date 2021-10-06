@@ -9,19 +9,20 @@ const adminUser = {
   password: 'Auth@test123',
 };
 
-beforeAll(() => {
-  connect('mongodb://localhost:27017/test');
+beforeAll(async () => {
+  await connect('mongodb://localhost:27017/BQauth');
   // Agregar admin
-  User.findOne({ email: adminUser.email })
-    .then(async (user) => {
+  const addUser = (user, admin = false) => User.findOne({ email: user.email })
+    .then(async (doc) => {
       // Crear usuario
-      const adminAuth = new User({
-        email: adminUser.email,
-        password: bcrypt.hashSync(adminUser.password, 10),
-        roles: { admin: true },
+      const auth = new User({
+        email: user.email,
+        password: bcrypt.hashSync(user.password, 10),
+        roles: { admin },
       });
-      if (!user) await adminAuth.save();
+      if (!doc) await auth.save();
     });
+  await addUser(adminUser, true);
 });
 
 afterAll(async () => {
