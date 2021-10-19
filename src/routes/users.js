@@ -21,7 +21,7 @@ const initAdminUser = async (app, next) => {
   const adminUser = new User({
     email: adminEmail,
     password: bcrypt.hashSync(adminPassword, 10),
-    roles: { admin: true },
+    roles: { rol: 'admin', admin: true },
   });
   // Validar si ya existe
   const searchUser = User.findOne({ email: adminEmail });

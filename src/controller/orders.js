@@ -5,11 +5,20 @@ const { paginate } = require('../services/pagination');
 module.exports = {
   getOrders: async (req, resp, next) => {
     try {
-      const url = `${req.protocol}://${req.headers.host + req.path}`;
+      const url = `${req.connection && req.connection.encrypted ? 'https' : 'http'}://${req.headers.host + req.path}`;
       const limit = parseInt(req.query.limit, 10) || 10;
       const page = parseInt(req.query.page, 10) || 1;
-      const orders = await Order.paginate({}, { limit, page, populate: 'products.product' });
-      resp.links(paginate(url, orders.limit, orders.page, orders.totalPages, orders));
+      const { status } = req.query;
+      let option = {};
+      let query = {};
+      if (status) {
+        query = { status };
+        option = { name: 'status', value: status };
+      }
+      const orders = await Order.paginate(query, {
+        limit, page, sort: { dateEntry: 1 }, populate: 'products.product',
+      });
+      resp.links(paginate(url, option, orders.limit, orders.page, orders.totalPages, orders));
       return resp.json(orders.docs);
     } catch (error) {
       next(error);
@@ -55,11 +64,13 @@ module.exports = {
         userId, client, products, status,
       } = req.body;
       // Validación de status
-      const validStatus = ['pending', 'canceled', 'delivering', 'delivered', 'preparing'];
+      const validStatus = [
+        'pendiente', 'cancelado', 'listo', 'entregado', 'preparando',
+      ];
       if (status) {
         if (!validStatus.includes(status)) return resp.status(400).json({ message: 'Estado inválido' });
       }
-      if (status === 'delivered') order.dateProcessed = Date.now();
+      if (status === 'entregado') order.dateProcessed = Date.now();
       // Validación de otros campos
       if (userId) order.userId = userId;
       if (client) order.client = client;

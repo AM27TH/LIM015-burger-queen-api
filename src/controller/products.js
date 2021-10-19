@@ -5,11 +5,20 @@ const { paginate } = require('../services/pagination');
 module.exports = {
   getProducts: async (req, resp, next) => {
     try {
-      const url = `${req.protocol}://${req.headers.host + req.path}`;
+      const url = `${req.connection && req.connection.encrypted ? 'https' : 'http'}://${req.headers.host + req.path}`;
       const limit = parseInt(req.query.limit, 10) || 10;
       const page = parseInt(req.query.page, 10) || 1;
-      const products = await Product.paginate({}, { limit, page });
-      resp.links(paginate(url, products.limit, products.page, products.totalPages, products));
+      const { type } = req.query;
+      let option = {};
+      let query = {};
+      if (type) {
+        query = { type };
+        option = { name: 'type', value: type };
+      }
+      const products = await Product.paginate(query, { limit, page });
+      resp.links(
+        paginate(url, option, products.limit, products.page, products.totalPages, products),
+      );
       return resp.json(products.docs);
     } catch (error) {
       next(error);

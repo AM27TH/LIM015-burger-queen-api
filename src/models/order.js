@@ -8,10 +8,10 @@ const orderSchema = new Schema({
     qty: { type: Number, required: true },
     product: { ref: 'Product', type: Schema.Types.ObjectId, required: true },
   }],
-  status: { type: String, required: true, default: 'pending' },
+  status: { type: String, required: true, default: 'pendiente' },
   dateEntry: { type: Date, required: true, default: Date.now },
   dateProcessed: { type: Date, default: Date.now },
-});
+}, { timestamps: true });
 
 orderSchema.plugin(mongoosePaginate);
 

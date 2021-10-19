@@ -14,7 +14,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  roles: { admin: { type: Boolean, required: true } },
+  roles: {
+    rol: { type: String, default: 'mesero', required: true },
+    admin: { type: Boolean, required: true },
+  },
 },
 { versionKey: false, timestamps: true });
 

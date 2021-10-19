@@ -7,11 +7,11 @@ const { paginate } = require('../services/pagination');
 module.exports = {
   getUsers: async (req, resp, next) => {
     try {
-      const url = `${req.protocol}://${req.headers.host + req.path}`;
+      const url = `${req.connection && req.connection.encrypted ? 'https' : 'http'}://${req.headers.host + req.path}`;
       const limit = parseInt(req.query.limit, 10) || 10;
       const page = parseInt(req.query.page, 10) || 1;
       const users = await User.paginate({}, { limit, page });
-      resp.links(paginate(url, users.limit, users.page, users.totalPages, users));
+      resp.links(paginate(url, {}, users.limit, users.page, users.totalPages, users));
       return resp.json(users.docs);
     } catch (error) {
       next(error);
@@ -52,6 +52,10 @@ module.exports = {
         password: await User.encryptPassword(password),
         roles: ((!roles) || !(roles.admin)) ? { admin: false } : { admin: true },
       });
+      // Validar rol
+      const rol = ['mesero', 'chef'];
+      if (newUser.roles.admin) newUser.roles.rol = 'admin';
+      else if (roles && roles.rol && rol.includes(roles.rol)) newUser.roles.rol = roles.rol;
       // guardamos el usuario
       const savedUser = await newUser.save();
       return resp.json(savedUser);
@@ -78,11 +82,20 @@ module.exports = {
       const { password } = req.body;
       if (!email) email = user.email;
       if (!roles) roles = user.roles;
+      if (roles.admin === null) roles.admin = user.roles.admin;
+      if (!roles.rol) roles.rol = user.roles.rol;
       // Validación roles
+      const rol = ['mesero', 'chef'];
+      if (user.roles.rol !== roles.rol) {
+        if (!userToken.roles.admin && !user.roles.admin) return next(403);
+        user.roles.rol = rol.includes(roles.rol) ? roles.rol : 'mesero';
+      }
       if (user.roles.admin !== roles.admin) {
         if (!userToken.roles.admin && !user.roles.admin) return next(403);
         // Si usuario es admin e intenta modificar su rol
-        user.roles = ((roles.admin)) ? { admin: true } : { admin: false };
+        user.roles = ((roles.admin))
+          ? { rol: 'admin', admin: true }
+          : { rol: user.roles.rol === 'admin' ? 'mesero' : user.roles.rol, admin: false };
       }
       // Validación email
       if (user.email !== email) {
